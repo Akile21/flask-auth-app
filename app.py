@@ -3,9 +3,10 @@ import secrets
 import sqlite3
 from datetime import datetime
 from functools import wraps
+import os  # Added import os for environment variables
 
 app = Flask(__name__)
-app.secret_key = 'MySecureAdminPassword123'  # ✅ Set your admin login password here
+app.secret_key = os.getenv('SECRET_KEY', 'MySecureAdminPassword123')  # Use env var with fallback
 
 # --- DB SETUP ---
 def init_db():
@@ -194,5 +195,7 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     return response
 
+# --- UPDATED APP RUN TO WORK ON RENDER ---
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
